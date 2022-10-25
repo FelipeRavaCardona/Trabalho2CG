@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "math.h": "c",
+        "iosfwd": "cpp",
+        "type_traits": "cpp",
+        "atomic": "cpp",
+        "bit": "cpp",
+        "iterator": "cpp",
+        "memory": "cpp",
+        "new": "cpp",
+        "tuple": "cpp",
+        "vector": "cpp",
+        "xmemory": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp"
+    }
+}
