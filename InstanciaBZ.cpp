@@ -69,8 +69,8 @@ InstanciaBZ::InstanciaBZ(Bezier *C)
 
 void InstanciaBZ::desenha()
 {
-    Escala.imprime("Escala: ");
-    cout << endl;
+    // Escala.imprime("Escala: ");
+    // cout << endl;
     // Aplica as transformacoes geometricas no modelo
     glPushMatrix();
         glTranslatef(Posicao.x, Posicao.y, 0);

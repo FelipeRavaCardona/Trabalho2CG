@@ -46,26 +46,27 @@ Temporizador T;
 double AccumDeltaT = 0;
 Temporizador T2;
 
-InstanciaBZ Personagens[10];
-InstanciaBz personagem;
-
-Ponto Pontos[10];
-unsigned int nPontos;
-Bezier Curvas[20];
-unsigned int nCurvas;
-
 // Limites l�gicos da �rea de desenho
 Ponto Min, Max;
 
 bool desenha = false;
 
-Poligono Mapa, MeiaSeta, Mastro;
 int nInstancias = 0;
 
 float angulo = 0.0;
 
 double nFrames = 0;
 double TempoTotal = 0;
+
+// Variaveis criadas
+Ponto pontos[10];
+unsigned int nPontos;
+
+Bezier curvas[20];
+unsigned int nCurvas;
+
+Poligono personagem;
+InstanciaBZ personagens[11];
 
 // **********************************************************************
 //
@@ -130,57 +131,33 @@ void DesenhaEixos()
 }
 
 // **********************************************************************
-void DesenhaInimigos()
-{
-    glLineWidth(3);
-    glPushMatrix();
-    defineCor(Red);
-    Personagem.desenhaPoligono();
-    glPopMatrix();
-}
-void DesenhaPersonagem(){
+void desenhaPersonagem(){
     glLineWidth(3);
     glPushMatrix();
     defineCor(BrightGold);
-    Personagem.desenhaPoligono();
+    personagem.desenhaPoligono();
     glPopMatrix();
 }
 // **********************************************************************
 // Esta fun��o deve instanciar todos os personagens do cen�rio
 // **********************************************************************
-void CriaInstancias()
+void CriaInstancias(int numInstancias)
 {
-    Personagens[0].Posicao = Pontos[1];
-    Personagens[0].nroDaCurva = Curvas.
-    Personagens[0].Rotacao = 0;
-    Personagens[0].modelo = DesenhaInimigos;
-    Personagens[0].Escala = Ponto(1, 1, 1);
-
-    Personagens[1].Posicao = Pontos[2];
-    Personagens[1].Rotacao = 0;
-    Personagens[1].modelo = DesenhaPersonagem;
-
-    Personagens[2].Posicao = Pontos[3];
-    Personagens[2].Rotacao = 0;
-    Personagens[2].modelo = DesenhaInimigos;
-
-    nInstancias = 3;
+    nInstancias = numInstancias;
+    for(int i = 0; i <= nInstancias; i++){
+        personagens[i].Posicao = pontos[i];
+        personagens[i].Rotacao = 0;
+        personagens[i].modelo = desenhaPersonagem;
+    }
 }
 // **********************************************************************
 //
 // **********************************************************************
 void CarregaModelos()
 {
-    Mapa.LePoligono("EstadoRS.txt");
-    MeiaSeta.LePoligono("MeiaSeta.txt");
-    Mastro.LePoligono("Mastro.txt");
-    Personagem.LePoligono("Personagem.txt");
+    personagem.LePoligono("Personagem.txt");
 }
-void CriaCurvas()
-{
-    nCurvas = 1;
-    Curvas[0] = Bezier(Ponto(-5, -5), Ponto(0, 6), Ponto(5, -5));
-}
+
 void CarregaPontos(const char *nome){
     ifstream input;            // ofstream arq;
     input.open(nome, ios::in); //arq.open(nome, ios::out);
@@ -203,10 +180,11 @@ void CarregaPontos(const char *nome){
         if(!input)
             break;
         //nLinha++;
-        Pontos[i] = Ponto(x,y,0);
+        pontos[i] = Ponto(x,y,0);
     }
     cout << "Pontos lidos com sucesso!" << endl;
 }
+
 void CarregaCurvas(const char *nome){
 
     ifstream input;            // ofstream arq;
@@ -234,7 +212,7 @@ void CarregaCurvas(const char *nome){
         int xInt = int (x);
         int yInt = int (y);
         int zInt = int (z);
-        Curvas[i] = Bezier(Pontos[xInt], Pontos[yInt], Pontos[zInt]);
+        curvas[i] = Bezier(pontos[xInt], pontos[yInt], pontos[zInt]);
     }
     cout << "Curvas lidas com sucesso!" << endl;
 
@@ -247,14 +225,11 @@ void init()
     // Define a cor do fundo da tela (AZUL)
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
-
-
-    //CriaCurvas();
     CarregaPontos("PontosDeTeste.txt");
     CarregaCurvas("CurvasDeTeste.txt");
 
     CarregaModelos();
-    CriaInstancias();
+    CriaInstancias(5);
 
     float d = 5;
     Min = Ponto(-d, -d);
@@ -264,11 +239,11 @@ void init()
 // **********************************************************************
 void DesenhaPersonagens(float tempoDecorrido)
 {
-    cout << "nInstancias: " << nInstancias << endl;
+    // cout << "nInstancias: " << nInstancias << endl;
     for (int i = 0; i < nInstancias; i++)
     {
-        Personagens[i].AtualizaPosicao(tempoDecorrido);
-        Personagens[i].desenha();
+        personagens[i].AtualizaPosicao(tempoDecorrido);
+        personagens[i].desenha();
     }
 }
 // **********************************************************************
@@ -278,8 +253,10 @@ void DesenhaCurvas()
 {
     for (int i = 0; i < nCurvas; i++)
     {
-        defineCor(Green);
-        Curvas[i].Traca();
+        glPushMatrix();
+        defineCor(Blue);
+        curvas[i].Traca();
+        glPopMatrix();
     }
 }
 // **********************************************************************
@@ -304,9 +281,9 @@ void display(void)
 
     DesenhaEixos();
 
-    DesenhaPersonagens(T2.getDeltaT());
     DesenhaCurvas();
-
+    DesenhaPersonagens(T2.getDeltaT());
+    
     glutSwapBuffers();
 }
 // **********************************************************************
@@ -330,12 +307,6 @@ void ContaTempo(double tempo)
             break;
         }
     }
-}
-
-void calculaTempoPassado(double *tempo){
-    Temporizador t;
-
-    tempo += t.getDeltaT;
 }
 // **********************************************************************
 //  void keyboard ( unsigned char key, int x, int y )
@@ -366,12 +337,11 @@ void arrow_keys(int a_keys, int x, int y)
     switch (a_keys)
     {
     case GLUT_KEY_LEFT:
-        // Personagens[1].Posicao.x -= 0.5;
-        Personagens[1].Rotacao++;
+        // personagens[0].Posicao.x -= 0.5;
+        personagens[0].Rotacao++;
         break;
     case GLUT_KEY_RIGHT:
-        // Personagens[1].Rotacao++;
-        Personagens[1].Rotacao--;
+        personagens[0].Rotacao--;
         break;
     case GLUT_KEY_UP:     // Se pressionar UP
         glutFullScreen(); // Vai para Full Screen
@@ -384,11 +354,6 @@ void arrow_keys(int a_keys, int x, int y)
     default:
         break;
     }
-}
-
-void calculaT(InstanciBz jogador){
-    float deslocamento = jogador.velocidade*TempoTotal;
-    float deltaT = deslocamento/jogador.
 }
 
 // **********************************************************************
