@@ -57,7 +57,6 @@ InstanciaBZ::InstanciaBZ()
 }
 InstanciaBZ::InstanciaBZ(Bezier *C)
 {
-    
     Rotacao = 0;
     Posicao = Ponto(0,0,0);
     Escala = Ponto(1,1,1);
@@ -98,6 +97,10 @@ Ponto InstanciaBZ::ObtemPosicao()
 }
 void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
 {
-    //cout << "AtualizaPosicao" << endl;
+    float deslocamento = Velocidade * tempoDecorrido;
+    float comprimentoCurva = Curva->ComprimentoTotalDaCurva;
+    float deltaT = deslocamento/comprimentoCurva;
+    tAtual += deltaT;
+    Posicao = Curva->Calcula(tAtual);
 }
 

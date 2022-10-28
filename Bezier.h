@@ -43,7 +43,7 @@ public:
     Ponto getPC(int i);
     void Traca();
     double CalculaT(double distanciaPercorrida);
-    void calculaComprimentoDaCurva();
+    float calculaComprimentoDaCurva();
 };
 
 #endif

@@ -17,7 +17,7 @@ Bezier::Bezier()
 // **********************************************************************
 //
 // **********************************************************************
-void Bezier::calculaComprimentoDaCurva()
+float Bezier::calculaComprimentoDaCurva()
 {
     double DeltaT = 1.0/50;
     double t=DeltaT;
@@ -35,7 +35,7 @@ void Bezier::calculaComprimentoDaCurva()
     }
     P2 = Calcula(1.0); // faz o fechamento da curva
     ComprimentoTotalDaCurva += calculaDistancia(P1,P2);
-    cout << "ComprimentoTotalDaCurva: " << ComprimentoTotalDaCurva << endl;
+    return ComprimentoTotalDaCurva;
     
 }
 // **********************************************************************
@@ -100,4 +100,3 @@ void Bezier::Traca()
     glVertex2f(P.x, P.y);
     glEnd();
 }
-

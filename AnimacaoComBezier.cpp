@@ -59,10 +59,10 @@ double nFrames = 0;
 double TempoTotal = 0;
 
 // Variaveis criadas
-Ponto pontos[10];
+Ponto pontos[20];
 unsigned int nPontos;
 
-Bezier curvas[20];
+Bezier curvas[40];
 unsigned int nCurvas;
 
 Poligono personagem;
@@ -131,10 +131,17 @@ void DesenhaEixos()
 }
 
 // **********************************************************************
-void desenhaPersonagem(){
+void desenhaPersonagemPrincipal(){
     glLineWidth(3);
     glPushMatrix();
     defineCor(BrightGold);
+    personagem.desenhaPoligono();
+    glPopMatrix();
+}
+void desenhaPersonagemInimigo(){
+    glLineWidth(3);
+    glPushMatrix();
+    defineCor(Green);
     personagem.desenhaPoligono();
     glPopMatrix();
 }
@@ -144,10 +151,22 @@ void desenhaPersonagem(){
 void CriaInstancias(int numInstancias)
 {
     nInstancias = numInstancias;
-    for(int i = 0; i <= nInstancias; i++){
+
+    personagens[0].Posicao = pontos[0];
+    personagens[0].Rotacao = 0;
+    personagens[0].cor = BrightGold;
+    personagens[0].modelo = desenhaPersonagemPrincipal;
+    personagens[0].Curva = &curvas[0];
+    personagens[0].Velocidade = 1;
+    
+
+    for(int i = 1; i <= nInstancias; i++){
         personagens[i].Posicao = pontos[i];
         personagens[i].Rotacao = 0;
-        personagens[i].modelo = desenhaPersonagem;
+        personagens[i].cor = Green;
+        personagens[i].modelo = desenhaPersonagemInimigo;
+        personagens[i].Curva = &curvas[i];
+        personagens[i].Velocidade = 1;
     }
 }
 // **********************************************************************
@@ -240,10 +259,25 @@ void init()
 void DesenhaPersonagens(float tempoDecorrido)
 {
     // cout << "nInstancias: " << nInstancias << endl;
-    for (int i = 0; i < nInstancias; i++)
+    if(desenha){
+        personagens[0].AtualizaPosicao(tempoDecorrido);
+    }
+    personagens[0].desenha();
+        if(personagens[0].tAtual >= 0.5){
+            for(int j = 0; j < nCurvas; j++){
+                // if(){}
+            }
+        }
+
+    for (int i = 1; i < nInstancias; i++)
     {
         personagens[i].AtualizaPosicao(tempoDecorrido);
         personagens[i].desenha();
+        if(personagens[i].tAtual >= 0.5){
+            for(int j = 0; j < nCurvas; j++){
+                // if(){}
+            }
+        }
     }
 }
 // **********************************************************************
