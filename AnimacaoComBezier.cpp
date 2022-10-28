@@ -157,6 +157,8 @@ void CriaInstancias(int numInstancias)
     personagens[0].cor = BrightGold;
     personagens[0].modelo = desenhaPersonagemPrincipal;
     personagens[0].Curva = &curvas[0];
+    personagens[0].proxCurva = -1;
+    personagens[0].nroDaCurva = 0;
     personagens[0].Velocidade = 1;
     
 
@@ -166,6 +168,8 @@ void CriaInstancias(int numInstancias)
         personagens[i].cor = Green;
         personagens[i].modelo = desenhaPersonagemInimigo;
         personagens[i].Curva = &curvas[i];
+        personagens[i].proxCurva = -1;
+        personagens[i].nroDaCurva = i;
         personagens[i].Velocidade = 1;
     }
 }
@@ -248,7 +252,7 @@ void init()
     CarregaCurvas("CurvasDeTeste.txt");
 
     CarregaModelos();
-    CriaInstancias(5);
+    CriaInstancias(3);
 
     float d = 5;
     Min = Ponto(-d, -d);
@@ -256,6 +260,31 @@ void init()
 }
 
 // **********************************************************************
+void trocaProximaCurva(InstanciaBZ *jogador){
+    jogador->metadeCurva = true;
+    if(jogador->direcao == 1){
+        Ponto pontoFinal = jogador->Curva->getPC(2);
+        for(int i = 0; i < nCurvas; i++){
+            if(jogador->nroDaCurva != i){
+                if(pontoFinal.x == curvas[i].getPC(0).x && pontoFinal.y == curvas[i].getPC(0).y){
+                    jogador->proxCurva = i;
+                }
+                
+            }
+        }
+    }
+}
+
+void trocaCurvaAtual(InstanciaBZ *jogador){
+    cout << "troca curva" << endl;
+    jogador->metadeCurva = false;
+    jogador->tAtual = 0;
+    jogador->Curva = &curvas[jogador->proxCurva];
+    jogador->Posicao = curvas[jogador->proxCurva].getPC(0);
+    jogador->nroDaCurva = jogador->proxCurva;
+    jogador->proxCurva = -1;
+}
+
 void DesenhaPersonagens(float tempoDecorrido)
 {
     // cout << "nInstancias: " << nInstancias << endl;
@@ -263,23 +292,30 @@ void DesenhaPersonagens(float tempoDecorrido)
         personagens[0].AtualizaPosicao(tempoDecorrido);
     }
     personagens[0].desenha();
-        if(personagens[0].tAtual >= 0.5){
-            for(int j = 0; j < nCurvas; j++){
-                // if(){}
-            }
+    if(personagens[0].tAtual >= 0.5){
+        if(personagens[0].metadeCurva == false){
+            trocaProximaCurva(&personagens[0]);
         }
+    }
+    if(personagens[0].tAtual >= 1){
+        trocaCurvaAtual(&personagens[0]);
+    }
 
-    for (int i = 1; i < nInstancias; i++)
-    {
+    for(int i = 1; i < nInstancias; i++){
         personagens[i].AtualizaPosicao(tempoDecorrido);
         personagens[i].desenha();
+        
         if(personagens[i].tAtual >= 0.5){
-            for(int j = 0; j < nCurvas; j++){
-                // if(){}
+            if(personagens[i].metadeCurva == false){
+                trocaProximaCurva(&personagens[i]);
             }
+        }
+        if(personagens[i].tAtual >= 1){
+            trocaCurvaAtual(&personagens[i]);
         }
     }
 }
+
 // **********************************************************************
 //
 // **********************************************************************

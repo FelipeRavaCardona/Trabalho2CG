@@ -53,6 +53,7 @@ InstanciaBZ::InstanciaBZ()
     proxCurva = -1;
     tAtual = 0.0;
     direcao = 1;
+    metadeCurva = false;
 
 }
 InstanciaBZ::InstanciaBZ(Bezier *C)
@@ -64,6 +65,7 @@ InstanciaBZ::InstanciaBZ(Bezier *C)
     Curva = C;
     tAtual = 0;
     direcao = 1;
+    metadeCurva = false;
 }
 
 void InstanciaBZ::desenha()
