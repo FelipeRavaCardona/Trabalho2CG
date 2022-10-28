@@ -14,6 +14,7 @@
 //
 
 #include <iostream>
+#include <cstdlib>
 #include <cmath>
 #include <ctime>
 #include <fstream>
@@ -269,14 +270,30 @@ void trocaProximaCurva(InstanciaBZ *jogador){
                 if(pontoFinal.x == curvas[i].getPC(0).x && pontoFinal.y == curvas[i].getPC(0).y){
                     jogador->proxCurva = i;
                 }
-                
             }
         }
     }
+
+    // Ponto pontoFinal = jogador->Curva->getPC(2);
+    // Bezier possiveisCurvas[40];
+    // int contador = 0;
+    // for(int i = 0; i < nCurvas; i++){
+    //     if(jogador->nroDaCurva != i){
+    //         if(pontoFinal.x == curvas[i].getPC(0).x && pontoFinal.y == curvas[i].getPC(0).y){
+    //             possiveisCurvas[contador++] = curvas[i];
+    //         }
+    //         if(pontoFinal.x == curvas[i].getPC(2).x && pontoFinal.y == curvas[i].getPC(2).y){
+    //             possiveisCurvas[contador++] = curvas[i];
+    //         }
+    //     }
+    // }
+
+    // int range = (contador - 1) - 0 + 1;
+    // int num = rand() % range + 0;
+    // jogador->proxCurva = num;
 }
 
 void trocaCurvaAtual(InstanciaBZ *jogador){
-    cout << "troca curva" << endl;
     jogador->metadeCurva = false;
     jogador->tAtual = 0;
     jogador->Curva = &curvas[jogador->proxCurva];
