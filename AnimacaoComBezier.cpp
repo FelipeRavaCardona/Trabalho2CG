@@ -263,34 +263,34 @@ void init()
 // **********************************************************************
 void trocaProximaCurva(InstanciaBZ *jogador){
     jogador->metadeCurva = true;
-    if(jogador->direcao == 1){
-        Ponto pontoFinal = jogador->Curva->getPC(2);
-        for(int i = 0; i < nCurvas; i++){
-            if(jogador->nroDaCurva != i){
-                if(pontoFinal.x == curvas[i].getPC(0).x && pontoFinal.y == curvas[i].getPC(0).y){
-                    jogador->proxCurva = i;
-                }
-            }
-        }
-    }
-
-    // Ponto pontoFinal = jogador->Curva->getPC(2);
-    // Bezier possiveisCurvas[40];
-    // int contador = 0;
-    // for(int i = 0; i < nCurvas; i++){
-    //     if(jogador->nroDaCurva != i){
-    //         if(pontoFinal.x == curvas[i].getPC(0).x && pontoFinal.y == curvas[i].getPC(0).y){
-    //             possiveisCurvas[contador++] = curvas[i];
-    //         }
-    //         if(pontoFinal.x == curvas[i].getPC(2).x && pontoFinal.y == curvas[i].getPC(2).y){
-    //             possiveisCurvas[contador++] = curvas[i];
+    // if(jogador->direcao == 1){
+    //     Ponto pontoFinal = jogador->Curva->getPC(2);
+    //     for(int i = 0; i < nCurvas; i++){
+    //         if(jogador->nroDaCurva != i){
+    //             if(pontoFinal.x == curvas[i].getPC(0).x && pontoFinal.y == curvas[i].getPC(0).y){
+    //                 jogador->proxCurva = i;
+    //             }
     //         }
     //     }
     // }
 
-    // int range = (contador - 1) - 0 + 1;
-    // int num = rand() % range + 0;
-    // jogador->proxCurva = num;
+    Ponto pontoFinal = jogador->Curva->getPC(2);
+    int possiveisCurvas[40];
+    int contador = 0;
+    for(int i = 0; i < nCurvas; i++){
+        if(jogador->nroDaCurva != i){
+            if(pontoFinal.x == curvas[i].getPC(0).x && pontoFinal.y == curvas[i].getPC(0).y){
+                possiveisCurvas[contador++] = i;
+            }
+            if(pontoFinal.x == curvas[i].getPC(2).x && pontoFinal.y == curvas[i].getPC(2).y){
+                possiveisCurvas[contador++] = i;
+            }
+        }
+    }
+
+    int range = (contador - 1) - 0 + 1;
+    int num = rand() % range + 0;
+    jogador->proxCurva = possiveisCurvas[num];
 }
 
 void trocaCurvaAtual(InstanciaBZ *jogador){
