@@ -479,6 +479,9 @@ void keyboard(unsigned char key, int x, int y)
     case ' ':
         desenha = !desenha;
         break;
+    case 'f':
+        personagens[0].direcao = 1 - personagens[0].direcao;
+        break;
     default:
         break;
     }
