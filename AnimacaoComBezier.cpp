@@ -153,7 +153,6 @@ void CriaInstancias(int numInstancias)
 {
     nInstancias = numInstancias;
 
-    personagens[0].Posicao = pontos[0];
     personagens[0].Rotacao = 0;
     personagens[0].cor = BrightGold;
     personagens[0].modelo = desenhaPersonagemPrincipal;
@@ -161,10 +160,9 @@ void CriaInstancias(int numInstancias)
     personagens[0].proxCurva = -1;
     personagens[0].nroDaCurva = 0;
     personagens[0].Velocidade = 1;
-    
+    personagens[0].direcao = 1;
 
     for(int i = 1; i <= nInstancias; i++){
-        personagens[i].Posicao = pontos[i];
         personagens[i].Rotacao = 0;
         personagens[i].cor = Green;
         personagens[i].modelo = desenhaPersonagemInimigo;
@@ -172,6 +170,7 @@ void CriaInstancias(int numInstancias)
         personagens[i].proxCurva = -1;
         personagens[i].nroDaCurva = i;
         personagens[i].Velocidade = 1;
+        personagens[i].direcao = 1;
     }
 }
 // **********************************************************************
@@ -237,6 +236,7 @@ void CarregaCurvas(const char *nome){
         int yInt = int (y);
         int zInt = int (z);
         curvas[i] = Bezier(pontos[xInt], pontos[yInt], pontos[zInt]);
+        curvas[i].cor = Blue;
     }
     cout << "Curvas lidas com sucesso!" << endl;
 
@@ -262,27 +262,22 @@ void init()
 
 // **********************************************************************
 void trocaProximaCurva(InstanciaBZ *jogador){
+    // fazer trocaProximaCurva para personagem 0 especificamente
     jogador->metadeCurva = true;
-    // if(jogador->direcao == 1){
-    //     Ponto pontoFinal = jogador->Curva->getPC(2);
-    //     for(int i = 0; i < nCurvas; i++){
-    //         if(jogador->nroDaCurva != i){
-    //             if(pontoFinal.x == curvas[i].getPC(0).x && pontoFinal.y == curvas[i].getPC(0).y){
-    //                 jogador->proxCurva = i;
-    //             }
-    //         }
-    //     }
-    // }
-
-    Ponto pontoFinal = jogador->Curva->getPC(2);
+    Ponto pontoFinal;
     int possiveisCurvas[40];
     int contador = 0;
+    if(jogador->direcao == 1){
+        pontoFinal = jogador->Curva->getPC(2);
+    } else {
+        pontoFinal = jogador->Curva->getPC(0);
+    }
     for(int i = 0; i < nCurvas; i++){
         if(jogador->nroDaCurva != i){
-            if(pontoFinal.x == curvas[i].getPC(0).x && pontoFinal.y == curvas[i].getPC(0).y){
+            if(curvas[i].getPC(0).isSame(pontoFinal)){
                 possiveisCurvas[contador++] = i;
             }
-            if(pontoFinal.x == curvas[i].getPC(2).x && pontoFinal.y == curvas[i].getPC(2).y){
+            if(curvas[i].getPC(2).isSame(pontoFinal)){
                 possiveisCurvas[contador++] = i;
             }
         }
@@ -291,46 +286,72 @@ void trocaProximaCurva(InstanciaBZ *jogador){
     int range = (contador - 1) - 0 + 1;
     int num = rand() % range + 0;
     jogador->proxCurva = possiveisCurvas[num];
+    curvas[jogador->proxCurva].cor = Red;
 }
 
 void trocaCurvaAtual(InstanciaBZ *jogador){
     jogador->metadeCurva = false;
-    jogador->tAtual = 0;
+    if(curvas[jogador->proxCurva].getPC(0).isSame(jogador->Curva->getPC(2))){
+        jogador->direcao = 1;
+    } else if(curvas[jogador->proxCurva].getPC(2).isSame(jogador->Curva->getPC(2))){
+        jogador->direcao = 0;
+    } else if(curvas[jogador->proxCurva].getPC(0).isSame(jogador->Curva->getPC(0))){
+        jogador->direcao = 1;
+        cout << "trocou direção pra 1 no caso da curva 0" << endl;
+    }
     jogador->Curva = &curvas[jogador->proxCurva];
-    jogador->Posicao = curvas[jogador->proxCurva].getPC(0);
     jogador->nroDaCurva = jogador->proxCurva;
     jogador->proxCurva = -1;
+    if(jogador->direcao == 1){
+        jogador->tAtual = 0;
+    } else {
+        jogador->tAtual = 1;
+    }
+    curvas[jogador->nroDaCurva].cor = Blue;
 }
 
 void DesenhaPersonagens(float tempoDecorrido)
 {
-    // cout << "nInstancias: " << nInstancias << endl;
     if(desenha){
         personagens[0].AtualizaPosicao(tempoDecorrido);
     }
     personagens[0].desenha();
-    if(personagens[0].tAtual >= 0.5){
-        if(personagens[0].metadeCurva == false){
+    if(personagens[0].direcao == 1){
+        if(personagens[0].tAtual >= 0.5 && personagens[0].metadeCurva == false){
             trocaProximaCurva(&personagens[0]);
         }
-    }
-    if(personagens[0].tAtual >= 1){
-        trocaCurvaAtual(&personagens[0]);
+        if(personagens[0].tAtual >= 1){
+            trocaCurvaAtual(&personagens[0]);
+        }
     }
 
-    for(int i = 1; i < nInstancias; i++){
-        personagens[i].AtualizaPosicao(tempoDecorrido);
-        personagens[i].desenha();
-        
-        if(personagens[i].tAtual >= 0.5){
-            if(personagens[i].metadeCurva == false){
-                trocaProximaCurva(&personagens[i]);
-            }
+    else{
+        if(personagens[0].tAtual <= 0.5 && personagens[0].metadeCurva == false){
+            trocaProximaCurva(&personagens[0]);
         }
-        if(personagens[i].tAtual >= 1){
-            trocaCurvaAtual(&personagens[i]);
+        if(personagens[0].tAtual <= 0){
+            trocaCurvaAtual(&personagens[0]);
         }
     }
+    // for(int i = 1; i < nInstancias; i++){
+    //     personagens[i].AtualizaPosicao(tempoDecorrido);
+    //     personagens[i].desenha();
+    //     if(personagens[i].direcao == 1){
+    //         if(personagens[i].tAtual >= 0.5 && personagens[i].metadeCurva == false){
+    //             trocaProximaCurva(&personagens[i]);
+    //         }
+    //         if(personagens[i].tAtual >= 1){
+    //             trocaCurvaAtual(&personagens[i]);
+    //         }
+    //     } else {
+    //         if(personagens[i].tAtual <= 0.5 && personagens[i].metadeCurva == false){
+    //             trocaProximaCurva(&personagens[i]);
+    //         }
+    //         if(personagens[i].tAtual <= 0){
+    //             trocaCurvaAtual(&personagens[i]);
+    //         }
+    //     }
+    // }
 }
 
 // **********************************************************************
@@ -341,7 +362,7 @@ void DesenhaCurvas()
     for (int i = 0; i < nCurvas; i++)
     {
         glPushMatrix();
-        defineCor(Blue);
+        defineCor(curvas[i].cor);
         curvas[i].Traca();
         glPopMatrix();
     }

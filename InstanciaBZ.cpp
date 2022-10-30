@@ -102,7 +102,10 @@ void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
     float deslocamento = Velocidade * tempoDecorrido;
     float comprimentoCurva = Curva->ComprimentoTotalDaCurva;
     float deltaT = deslocamento/comprimentoCurva;
-    tAtual += deltaT;
+    if(direcao == 1){
+        tAtual += deltaT;
+    } else {
+        tAtual -= deltaT;
+    }
     Posicao = Curva->Calcula(tAtual);
 }
-
