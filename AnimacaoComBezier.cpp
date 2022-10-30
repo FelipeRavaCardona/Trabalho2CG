@@ -261,6 +261,48 @@ void init()
 }
 
 // **********************************************************************
+int possiveisCurvasFinal[40];
+int nPossiveisCurvas = 0;
+int proximaCurvaAtual = -1;
+void proximaCurva(){
+    if(personagens[0].metadeCurva == true){
+        curvas[personagens[0].proxCurva].cor = Blue;
+        if(proximaCurvaAtual + 1 < nPossiveisCurvas){
+            proximaCurvaAtual += 1;
+            personagens[0].proxCurva = possiveisCurvasFinal[proximaCurvaAtual];
+        } else {
+            proximaCurvaAtual = 0;
+            personagens[0].proxCurva = possiveisCurvasFinal[proximaCurvaAtual];
+        }
+        curvas[personagens[0].proxCurva].cor = Red;
+    }
+}
+
+void ultimaCurva(){
+    if(personagens[0].metadeCurva == true){
+        curvas[personagens[0].proxCurva].cor = Blue;
+        if(proximaCurvaAtual - 1 < 0){
+            proximaCurvaAtual = nPossiveisCurvas - 1;
+            personagens[0].proxCurva = possiveisCurvasFinal[proximaCurvaAtual];
+        } else {
+            proximaCurvaAtual -= 1;
+            personagens[0].proxCurva = possiveisCurvasFinal[proximaCurvaAtual];
+        }
+        curvas[personagens[0].proxCurva].cor = Red;
+    }
+}
+
+void alteraPossiveisCurvas(int temp[]){
+    if(personagens[0].metadeCurva == true){
+        for(int i = 0; i < 40; i++){
+            possiveisCurvasFinal[i] = -1;
+        }
+        for(int i = 0; i < nPossiveisCurvas; i++){
+            possiveisCurvasFinal[i] = temp[i];
+        }
+    }
+}
+
 void trocaProximaCurvaPersonagemPrincipal(InstanciaBZ *jogador){
     jogador->metadeCurva = true;
     Ponto pontoFinal;
@@ -285,6 +327,9 @@ void trocaProximaCurvaPersonagemPrincipal(InstanciaBZ *jogador){
     int range = (contador - 1) - 0 + 1;
     int num = rand() % range + 0;
     jogador->proxCurva = possiveisCurvas[num];
+    nPossiveisCurvas = contador;
+    proximaCurvaAtual = num;
+    alteraPossiveisCurvas(possiveisCurvas);
     curvas[jogador->proxCurva].cor = Red;
 }
 
@@ -497,10 +542,10 @@ void arrow_keys(int a_keys, int x, int y)
     {
     case GLUT_KEY_LEFT:
         // personagens[0].Posicao.x -= 0.5;
-        personagens[0].Rotacao++;
+        ultimaCurva();
         break;
     case GLUT_KEY_RIGHT:
-        personagens[0].Rotacao--;
+        proximaCurva();
         break;
     case GLUT_KEY_UP:     // Se pressionar UP
         glutFullScreen(); // Vai para Full Screen
