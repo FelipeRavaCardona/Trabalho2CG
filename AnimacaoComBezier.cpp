@@ -481,6 +481,8 @@ void keyboard(unsigned char key, int x, int y)
         break;
     case 'f':
         personagens[0].direcao = 1 - personagens[0].direcao;
+        curvas[personagens[0].proxCurva].cor = Blue;
+        personagens[0].metadeCurva = false;
         break;
     default:
         break;
