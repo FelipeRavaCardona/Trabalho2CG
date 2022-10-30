@@ -261,8 +261,7 @@ void init()
 }
 
 // **********************************************************************
-void trocaProximaCurva(InstanciaBZ *jogador){
-    // fazer trocaProximaCurva para personagem 0 especificamente
+void trocaProximaCurvaPersonagemPrincipal(InstanciaBZ *jogador){
     jogador->metadeCurva = true;
     Ponto pontoFinal;
     int possiveisCurvas[40];
@@ -289,7 +288,7 @@ void trocaProximaCurva(InstanciaBZ *jogador){
     curvas[jogador->proxCurva].cor = Red;
 }
 
-void trocaCurvaAtual(InstanciaBZ *jogador){
+void trocaCurvaAtualPersonagemPrincipal(InstanciaBZ *jogador){
     jogador->metadeCurva = false;
     if(curvas[jogador->proxCurva].getPC(0).isSame(jogador->Curva->getPC(2))){
         jogador->direcao = 1;
@@ -310,6 +309,53 @@ void trocaCurvaAtual(InstanciaBZ *jogador){
     curvas[jogador->nroDaCurva].cor = Blue;
 }
 
+// **********************************************************************
+void trocaProximaCurva(InstanciaBZ *jogador){
+        jogador->metadeCurva = true;
+    Ponto pontoFinal;
+    int possiveisCurvas[40];
+    int contador = 0;
+    if(jogador->direcao == 1){
+        pontoFinal = jogador->Curva->getPC(2);
+    } else {
+        pontoFinal = jogador->Curva->getPC(0);
+    }
+    for(int i = 0; i < nCurvas; i++){
+        if(jogador->nroDaCurva != i){
+            if(curvas[i].getPC(0).isSame(pontoFinal)){
+                possiveisCurvas[contador++] = i;
+            }
+            if(curvas[i].getPC(2).isSame(pontoFinal)){
+                possiveisCurvas[contador++] = i;
+            }
+        }
+    }
+
+    int range = (contador - 1) - 0 + 1;
+    int num = rand() % range + 0;
+    jogador->proxCurva = possiveisCurvas[num];
+}
+
+void trocaCurvaAtual(InstanciaBZ *jogador){
+    jogador->metadeCurva = false;
+    if(curvas[jogador->proxCurva].getPC(0).isSame(jogador->Curva->getPC(2))){
+        jogador->direcao = 1;
+    } else if(curvas[jogador->proxCurva].getPC(2).isSame(jogador->Curva->getPC(2))){
+        jogador->direcao = 0;
+    } else if(curvas[jogador->proxCurva].getPC(0).isSame(jogador->Curva->getPC(0))){
+        jogador->direcao = 1;
+    }
+    jogador->Curva = &curvas[jogador->proxCurva];
+    jogador->nroDaCurva = jogador->proxCurva;
+    jogador->proxCurva = -1;
+    if(jogador->direcao == 1){
+        jogador->tAtual = 0;
+    } else {
+        jogador->tAtual = 1;
+    }
+}
+
+// **********************************************************************
 void DesenhaPersonagens(float tempoDecorrido)
 {
     if(desenha){
@@ -318,40 +364,40 @@ void DesenhaPersonagens(float tempoDecorrido)
     personagens[0].desenha();
     if(personagens[0].direcao == 1){
         if(personagens[0].tAtual >= 0.5 && personagens[0].metadeCurva == false){
-            trocaProximaCurva(&personagens[0]);
+            trocaProximaCurvaPersonagemPrincipal(&personagens[0]);
         }
         if(personagens[0].tAtual >= 1){
-            trocaCurvaAtual(&personagens[0]);
+            trocaCurvaAtualPersonagemPrincipal(&personagens[0]);
         }
     }
 
     else{
         if(personagens[0].tAtual <= 0.5 && personagens[0].metadeCurva == false){
-            trocaProximaCurva(&personagens[0]);
+            trocaProximaCurvaPersonagemPrincipal(&personagens[0]);
         }
         if(personagens[0].tAtual <= 0){
-            trocaCurvaAtual(&personagens[0]);
+            trocaCurvaAtualPersonagemPrincipal(&personagens[0]);
         }
     }
-    // for(int i = 1; i < nInstancias; i++){
-    //     personagens[i].AtualizaPosicao(tempoDecorrido);
-    //     personagens[i].desenha();
-    //     if(personagens[i].direcao == 1){
-    //         if(personagens[i].tAtual >= 0.5 && personagens[i].metadeCurva == false){
-    //             trocaProximaCurva(&personagens[i]);
-    //         }
-    //         if(personagens[i].tAtual >= 1){
-    //             trocaCurvaAtual(&personagens[i]);
-    //         }
-    //     } else {
-    //         if(personagens[i].tAtual <= 0.5 && personagens[i].metadeCurva == false){
-    //             trocaProximaCurva(&personagens[i]);
-    //         }
-    //         if(personagens[i].tAtual <= 0){
-    //             trocaCurvaAtual(&personagens[i]);
-    //         }
-    //     }
-    // }
+    for(int i = 1; i < nInstancias; i++){
+        personagens[i].AtualizaPosicao(tempoDecorrido);
+        personagens[i].desenha();
+        if(personagens[i].direcao == 1){
+            if(personagens[i].tAtual >= 0.5 && personagens[i].metadeCurva == false){
+                trocaProximaCurva(&personagens[i]);
+            }
+            if(personagens[i].tAtual >= 1){
+                trocaCurvaAtual(&personagens[i]);
+            }
+        } else {
+            if(personagens[i].tAtual <= 0.5 && personagens[i].metadeCurva == false){
+                trocaProximaCurva(&personagens[i]);
+            }
+            if(personagens[i].tAtual <= 0){
+                trocaCurvaAtual(&personagens[i]);
+            }
+        }
+    }
 }
 
 // **********************************************************************
