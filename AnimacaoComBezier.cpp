@@ -69,6 +69,10 @@ unsigned int nCurvas;
 Poligono personagem;
 InstanciaBZ personagens[11];
 
+int possiveisCurvasFinal[40];
+int nPossiveisCurvas = 0;
+int proximaCurvaAtual = -1;
+
 // **********************************************************************
 //
 // **********************************************************************
@@ -261,9 +265,6 @@ void init()
 }
 
 // **********************************************************************
-int possiveisCurvasFinal[40];
-int nPossiveisCurvas = 0;
-int proximaCurvaAtual = -1;
 void proximaCurva(){
     if(personagens[0].metadeCurva == true){
         curvas[personagens[0].proxCurva].cor = Blue;
