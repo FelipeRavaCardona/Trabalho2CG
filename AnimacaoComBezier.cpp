@@ -135,15 +135,15 @@ void DesenhaEixos()
     glEnd();
 }
 
-// **********************************************************************
-void desenhaPersonagemPrincipal(){
+// **********************************************************************/
+void desenhaPersonagemPrincipalModelo(){
     glLineWidth(3);
     glPushMatrix();
     defineCor(BrightGold);
     personagem.desenhaPoligono();
     glPopMatrix();
 }
-void desenhaPersonagemInimigo(){
+void desenhaPersonagemInimigoModelo(){
     glLineWidth(3);
     glPushMatrix();
     defineCor(Green);
@@ -159,7 +159,7 @@ void CriaInstancias(int numInstancias)
 
     personagens[0].Rotacao = 0;
     personagens[0].cor = BrightGold;
-    personagens[0].modelo = desenhaPersonagemPrincipal;
+    personagens[0].modelo = desenhaPersonagemPrincipalModelo;
     personagens[0].Curva = &curvas[0];
     personagens[0].proxCurva = -1;
     personagens[0].nroDaCurva = 0;
@@ -169,7 +169,7 @@ void CriaInstancias(int numInstancias)
     for(int i = 1; i <= nInstancias; i++){
         personagens[i].Rotacao = 0;
         personagens[i].cor = Green;
-        personagens[i].modelo = desenhaPersonagemInimigo;
+        personagens[i].modelo = desenhaPersonagemInimigoModelo;
         personagens[i].Curva = &curvas[i];
         personagens[i].proxCurva = -1;
         personagens[i].nroDaCurva = i;
@@ -257,7 +257,7 @@ void init()
     CarregaCurvas("CurvasDeTeste.txt");
 
     CarregaModelos();
-    CriaInstancias(3);
+    CriaInstancias(11);
 
     float d = 5;
     Min = Ponto(-d, -d);
@@ -342,7 +342,6 @@ void trocaCurvaAtualPersonagemPrincipal(InstanciaBZ *jogador){
         jogador->direcao = 0;
     } else if(curvas[jogador->proxCurva].getPC(0).isSame(jogador->Curva->getPC(0))){
         jogador->direcao = 1;
-        cout << "trocou direção pra 1 no caso da curva 0" << endl;
     }
     jogador->Curva = &curvas[jogador->proxCurva];
     jogador->nroDaCurva = jogador->proxCurva;
@@ -402,8 +401,7 @@ void trocaCurvaAtual(InstanciaBZ *jogador){
 }
 
 // **********************************************************************
-void DesenhaPersonagens(float tempoDecorrido)
-{
+void desenhaPersonagemPrincipal(float tempoDecorrido){
     if(desenha){
         personagens[0].AtualizaPosicao(tempoDecorrido);
     }
@@ -425,6 +423,9 @@ void DesenhaPersonagens(float tempoDecorrido)
             trocaCurvaAtualPersonagemPrincipal(&personagens[0]);
         }
     }
+}
+
+void desenhaPersonagemInimigo(float tempoDecorrido){
     for(int i = 1; i < nInstancias; i++){
         personagens[i].AtualizaPosicao(tempoDecorrido);
         personagens[i].desenha();
@@ -443,7 +444,19 @@ void DesenhaPersonagens(float tempoDecorrido)
                 trocaCurvaAtual(&personagens[i]);
             }
         }
+        if(personagens[i].Curva == personagens[0].Curva){
+            if(personagens[0].calculaColisao(personagens[i].Posicao) == true){
+                cout << "COLISÃO" << endl;
+            }
+        }
     }
+}
+
+void DesenhaPersonagens(float tempoDecorrido)
+{ 
+    desenhaPersonagemPrincipal(tempoDecorrido);
+
+    desenhaPersonagemInimigo(tempoDecorrido);
 }
 
 // **********************************************************************

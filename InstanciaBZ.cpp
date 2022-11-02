@@ -97,8 +97,22 @@ Ponto InstanciaBZ::ObtemPosicao()
     glPopMatrix();
     return PosicaoDoPersonagem;
 }
+
+bool InstanciaBZ::calculaColisao(Ponto p){
+    double distancia = calculaDistancia(Posicao, p);
+    if(distancia <= 0.2){
+        return true;
+    }
+    return false;
+}
+
 void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
 {
+
+    Ponto vetorHorizontal = Ponto(1,0,0);
+
+    Ponto ultimaPosicao = Posicao;
+
     float deslocamento = Velocidade * tempoDecorrido;
     float comprimentoCurva = Curva->ComprimentoTotalDaCurva;
     float deltaT = deslocamento/comprimentoCurva;
@@ -108,4 +122,20 @@ void InstanciaBZ::AtualizaPosicao(float tempoDecorrido)
         tAtual -= deltaT;
     }
     Posicao = Curva->Calcula(tAtual);
+
+    Ponto vetorResultado = Posicao - ultimaPosicao;
+
+    vetorResultado.versor();
+    double prodEscalar = ProdEscalar(vetorHorizontal, vetorResultado);
+
+    double cosDelta = prodEscalar;
+    double radianos = acos(cosDelta);
+    double pi = 2 * acos(0.0);
+    Rotacao = radianos * (180/pi);
+    Rotacao += 90;
+    if(vetorResultado.y <= 0){
+        Rotacao = Rotacao * (-1);
+        Rotacao -= 180;
+    }
+
 }

@@ -40,6 +40,7 @@ public:
     void desenha();
     void AtualizaPosicao(float tempoDecorrido);
     Ponto ObtemPosicao();
+    bool calculaColisao(Ponto p);
 };
 
 
